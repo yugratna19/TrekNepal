@@ -12,10 +12,10 @@ knn = joblib.load('knn_model.joblib')
 st.sidebar.header('Select Trek Preferences')
 
 # Define options for user selection
-cost_options = ['cheap', 'medium', 'expensive', 'luxury']
-duration_options = ['short', 'medium', 'long', 'very long']
-altitude_options = ['low', 'medium', 'high', 'very high']
-difficulty_options = ['easy', 'moderate', 'hard']
+cost_options = ['Cheap', 'Medium', 'Expensive', 'Luxury']
+duration_options = ['Short', 'Medium', 'Long', 'Very Long']
+altitude_options = ['Low', 'Medium', 'High', 'Very High']
+difficulty_options = ['Easy', 'Moderate', 'Hard']
 
 # User selection using selectbox
 selected_cost = st.sidebar.selectbox('Cost', cost_options)
@@ -45,13 +45,15 @@ results = trek_data.iloc[indices[0]]
 # Ensure unique treks are displayed
 unique_treks = results.drop_duplicates(subset='Trek')
 
+
 # Display the results
 st.header('Recommended Treks')
 if not unique_treks.empty:
     for _, row in unique_treks.iterrows():
         st.write(f"Trek: {row['Trek']}")
-        st.write(f"Cost: USD {row['Cost']}")
+        st.write(f"Cost: USD {row['Cost']} ({row['Cost Range']})")
         st.write(f"Duration: {row['Time']} days")
+        st.write(f"Altitude: {row['Max Altitude']} meters ({row['Altitude Category']})")
         st.write(f"Difficulty: {row['Trip Grade']}")
         st.write(f"Link: {row['Contact or Book your Trip']}")
         st.write("---")
