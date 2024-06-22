@@ -1,88 +1,59 @@
 import streamlit as st
+import pandas as pd
 import joblib
-import numpy as np
+from sklearn.neighbors import NearestNeighbors
 
-# Load the model, encoders, and scaler
-model = joblib.load('improved_trek_recommendation_model.pkl')
-label_encoders = joblib.load('label_encoders.pkl')
-scaler = joblib.load('scaler.pkl')
+# Load the processed trek data, vectorizer, and KNN model
+trek_data = pd.read_csv('nepal-treking-dataset\Trek Data Modified.csv')
 
-st.title('Trek Recommendation System')
+vectorizer = joblib.load('vectorizer.joblib')
+knn = joblib.load('knn_model.joblib')
 
-# Create input widgets with both sliders and manual entry
-trip_grade = st.selectbox('Trip Grade', label_encoders['Trip Grade'].classes_)
-accomodation = st.selectbox('Accomodation', label_encoders['Accomodation'].classes_)
-best_travel_time = st.selectbox('Best Travel Time', label_encoders['Best Travel Time'].classes_)
-cost_range = st.selectbox('Cost Range', label_encoders['Cost Range'].classes_)
-duration_category = st.selectbox('Duration Category', label_encoders['Duration Category'].classes_)
-altitude_category = st.selectbox('Altitude Category', label_encoders['Altitude Category'].classes_)
+st.sidebar.header('Select Trek Preferences')
 
-# Define ranges based on categories
-if duration_category == 'Short':
-    time_range = (5, 7)
-elif duration_category == 'Medium':
-    time_range = (7, 14)
-elif duration_category == 'Long':
-    time_range = (14, 21)
-elif duration_category == 'Very Long':
-    time_range = (21, 27)
+# Define options for user selection
+cost_options = ['cheap', 'medium', 'expensive', 'luxury']
+duration_options = ['short', 'medium', 'long', 'very long']
+altitude_options = ['low', 'medium', 'high', 'very high']
+difficulty_options = ['easy', 'moderate', 'hard']
+
+# User selection using selectbox
+selected_cost = st.sidebar.selectbox('Cost', cost_options)
+selected_duration = st.sidebar.selectbox('Duration', duration_options)
+selected_altitude = st.sidebar.selectbox('Altitude', altitude_options)
+selected_difficulty = st.sidebar.selectbox('Difficulty', difficulty_options)
+
+# Display selected options with formatting
+st.markdown('### Selected Trek Preferences:')
+st.markdown(f'- **Cost:** {selected_cost.capitalize()}')
+st.markdown(f'- **Duration:** {selected_duration.capitalize()}')
+st.markdown(f'- **Altitude:** {selected_altitude.capitalize()}')
+st.markdown(f'- **Difficulty:** {selected_difficulty.capitalize()}')
+
+# Combine user inputs into a feature string
+user_input = ' '.join([selected_cost, selected_duration, selected_altitude, selected_difficulty])
+user_vector = vectorizer.transform([user_input])
+
+# Use KNN to find similar treks based on user preferences
+st.write("Finding recommendations based on your preferences...")
+X = vectorizer.transform(trek_data['Features'])
+distances, indices = knn.kneighbors(user_vector)
+
+# Get recommended treks
+results = trek_data.iloc[indices[0]]
+
+# Ensure unique treks are displayed
+unique_treks = results.drop_duplicates(subset='Trek')
+
+# Display the results
+st.header('Recommended Treks')
+if not unique_treks.empty:
+    for _, row in unique_treks.iterrows():
+        st.write(f"Trek: {row['Trek']}")
+        st.write(f"Cost: USD {row['Cost']}")
+        st.write(f"Duration: {row['Time']} days")
+        st.write(f"Difficulty: {row['Trip Grade']}")
+        st.write(f"Link: {row['Contact or Book your Trip']}")
+        st.write("---")
 else:
-    time_range = (5, 27)
-
-if cost_range == 'Low':
-    cost_range_val = (450.0, 1000.0)
-elif cost_range == 'Medium':
-    cost_range_val = (1000.0, 2000.0)
-elif cost_range == 'High':
-    cost_range_val = (2000.0, 3000.0)
-elif cost_range == 'Very High':
-    cost_range_val = (3000.0, 4000.0)
-elif cost_range == 'Luxury':
-    cost_range_val = (4000.0, 4200.0)
-else:
-    cost_range_val = (450.0, 4200.0)
-
-if altitude_category == 'Low':
-    altitude_range = (1550, 3000)
-elif altitude_category == 'Moderate':
-    altitude_range = (3000, 4000)
-elif altitude_category == 'High':
-    altitude_range = (4000, 5000)
-elif altitude_category == 'Very High':
-    altitude_range = (5000, 6000)
-elif altitude_category == 'Extreme':
-    altitude_range = (6000, 6340)
-else:
-    altitude_range = (1550, 6340)
-    
-if st.button('Get Recommendation'):
-    # Encode categorical features
-    trip_grade_enc = label_encoders['Trip Grade'].transform([trip_grade])[0]
-    accomodation_enc = label_encoders['Accomodation'].transform([accomodation])[0]
-    best_travel_time_enc = label_encoders['Best Travel Time'].transform([best_travel_time])[0]
-    cost_range_enc = label_encoders['Cost Range'].transform([cost_range])[0]
-    duration_category_enc = label_encoders['Duration Category'].transform([duration_category])[0]
-    altitude_category_enc = label_encoders['Altitude Category'].transform([altitude_category])[0]
-
-    # Create feature array
-    time = np.mean(time_range)
-    cost = np.mean(cost_range_val)
-    max_altitude = np.mean(altitude_range)
-    features = np.array([[time, cost, trip_grade_enc, max_altitude, accomodation_enc, best_travel_time_enc, cost_range_enc, duration_category_enc, altitude_category_enc]])
-
-    # Scale features
-    features_scaled = scaler.transform(features)
-
-    # Predict using the model
-    probabilities = model.predict_proba(features_scaled)
-    
-    # Get the top N recommendations
-    top_n = 5
-    top_indices = np.argsort(probabilities[0])[::-1][:top_n]
-    
-    # Decode the recommendations
-    recommendations = [label_encoders['Trek'].inverse_transform([i])[0] for i in top_indices]
-
-    st.write('Recommended Treks:')
-    for i, trek in enumerate(recommendations, 1):
-        st.write(f"{i}. {trek}")
+    st.write("No recommendations found.")
