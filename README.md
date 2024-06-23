@@ -1,7 +1,7 @@
 
 # TrekNepal
 
-This project is a Trek Recommendation System that helps users find suitable trekking routes based on their preferences. The preferences include cost, duration, altitude, and difficulty level. The application uses a machine learning model to recommend treks that best fit the user's selected criteria.
+This project is a Trek Recommendation System that helps users find suitable trekking routes based on their preferences. The preferences include cost, duration, altitude, and difficulty level. The application uses a K-Nearest Neighbors (KNN) algorithm to recommend treks that best fit the user's selected criteria.
 ## Features
 
 - User Preferences Input: Users can input their preferences for cost, duration, altitude, and difficulty.
