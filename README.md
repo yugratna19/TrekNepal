@@ -9,7 +9,7 @@ This project is a Trek Recommendation System that helps users find suitable trek
 - Information Display: Displays detailed information about the recommended treks, including cost, duration, altitude, and difficulty level.
 
 
-## Screenshots
+## Screenshot
 
 ![Website Screenshot](output.png)
 
@@ -35,8 +35,7 @@ Install dependencies
   pip install -r requirements.txt
 ```
 
-
-### Model training
+Model training
 
 The model training code is provided in the model.ipynb notebook. Run this notebook to train the recommendation model.
 
