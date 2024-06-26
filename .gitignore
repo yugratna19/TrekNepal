@@ -123,3 +123,4 @@ Thumbs.db
 
 # Models and encoders
 *.pkl
+*.joblib
