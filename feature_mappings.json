@@ -1,0 +1,38 @@
+{
+    "cost_mapping": {
+        "Low": "Budget",
+        "Medium": "Standard",
+        "High": "Premium",
+        "Very High": "Luxury"
+    },
+    "duration_mapping": {
+        "Short": "1-5 days",
+        "Medium": "6-10 days",
+        "Long": "11-15 days",
+        "Very Long": "15+ days"
+    },
+    "altitude_mapping": {
+        "Low": "Below 3000m",
+        "Moderate": "3000-4000m",
+        "High": "4000-5000m",
+        "Very High": "Above 5000m"
+    },
+    "difficulty_mapping": {
+        "Easy": [
+            "Easy",
+            "Beginner",
+            "Simple"
+        ],
+        "Moderate": [
+            "Moderate",
+            "Intermediate",
+            "Medium"
+        ],
+        "Difficult": [
+            "Difficult",
+            "Advanced",
+            "Challenging",
+            "Hard"
+        ]
+    }
+}
