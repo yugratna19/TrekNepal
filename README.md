@@ -20,7 +20,7 @@ A smart Trek Recommendation System that helps users discover perfect trekking ro
 - **Streamlit**: For creating the interactive web interface
 - **Pandas**: For data manipulation and analysis
 - **Scikit-learn**: For implementing the KNN recommendation algorithm
-- **Matplotlib/Seaborn**: For data visualization (if used)
+- **Matplotlib/Seaborn**: For data visualization
 
 ## Installation
 
